@@ -482,6 +482,7 @@ fail_locked:
 	mutex_unlock(&mtd_table_mutex);
 	return error;
 }
+EXPORT_SYMBOL_GPL(add_mtd_device);
 
 /**
  *	del_mtd_device - unregister an MTD device
@@ -527,6 +528,7 @@ out_error:
 	mutex_unlock(&mtd_table_mutex);
 	return ret;
 }
+EXPORT_SYMBOL_GPL(del_mtd_device);
 
 static int mtd_add_device_partitions(struct mtd_info *mtd,
 				     struct mtd_partition *real_parts,

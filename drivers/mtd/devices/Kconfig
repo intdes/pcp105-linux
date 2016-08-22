@@ -120,6 +120,13 @@ config MTD_BCM47XXSFLASH
 	  registered by bcma as platform devices. This enables driver for
 	  serial flash memories (only read-only mode is implemented).
 
+config MTD_ICH7_SPI_FLASH
+	tristate "Support for SPI Flash attached to an Intel ICH7 chipset"
+	depends on MTD && PCI
+	help
+	  This enables a driver for an SPI Serial Flash device attached to
+	  the SPI bus of an Intel ICH7 chipset.
+
 config MTD_SLRAM
 	tristate "Uncached system RAM"
 	help

@@ -1,0 +1,7 @@
+--- drivers/mtd/devices/Makefile
++++ drivers/mtd/devices/Makefile
+@@ -24,3 +24,4 @@ obj-$(CONFIG_MTD_LART)		+= lart.o
+ obj-$(CONFIG_MTD_BLKMTD)	+= blkmtd.o
+ obj-$(CONFIG_MTD_BLOCK2MTD)	+= block2mtd.o
+ obj-$(CONFIG_RAMTD)		+= ramtd.o
++obj-$(CONFIG_MTD_ICH7_SPI_FLASH)+= ich7_spi_flash.o

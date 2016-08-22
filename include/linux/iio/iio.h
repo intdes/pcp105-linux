@@ -252,6 +252,8 @@ struct iio_chan_spec {
 	unsigned		differential:1;
 };
 
+#define IIO_ST(si, rb, sb, sh)                      \
+    { .sign = si, .realbits = rb, .storagebits = sb, .shift = sh }
 
 /**
  * iio_channel_has_info() - Checks whether a channel supports a info attribute
