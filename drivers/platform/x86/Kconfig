@@ -771,6 +771,13 @@ config INTEL_MFLD_THERMAL
          Say Y here to enable thermal driver support for the  Intel Medfield
          platform.
 
+config INTEL_QRK_THERMAL
+    tristate "Thermal driver for Intel Quark platform"
+    depends on X86_INTEL_QUARK && THERMAL
+    help
+      Say Y here to enable Quark's Thermal driver plus the MSI's
+      that can be hooked from the thermal sub-system
+
 config INTEL_IPS
 	tristate "Intel Intelligent Power Sharing"
 	depends on ACPI
@@ -805,6 +812,22 @@ config INTEL_IMR
 	  registers during its bootup process.
 
 	  If you are running on a Galileo/Quark say Y here.
+
+config INTEL_QRK_ESRAM
+    bool "eSRAM - embedded SRAM driver for Intel Quark platform"
+    depends on X86_INTEL_QUARK && PM
+    select KALLSYMS
+    select CRC16
+    help
+      Say Y here to enable eSRAM overlay.eSRAM overlaying allows for
+      code/data structures to be mapped into eSRAM thus providing
+      far faster access to code/data than ordinary DRAM. Slower
+      than cache RAM faster than DRAM.
+
+if X86_INTEL_QUARK
+source "drivers/platform/x86/intel-quark/Kconfig"
+endif
+
 
 config IBM_RTL
 	tristate "Device driver to enable PRTL support"

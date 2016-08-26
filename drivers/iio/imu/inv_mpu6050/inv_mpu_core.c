@@ -2218,7 +2218,7 @@ static int inv_mpu_power_supply(struct inv_mpu_iio_s *st, bool power_on)
 	return result;
 }
 
-#ifdef CONFIG_PM_RUNTIME
+#ifdef CCONFIG_PM_RUNTIME
 static int inv_mpu_runtime_suspend(struct device *dev)
 {
 	struct inv_mpu_iio_s *st =
@@ -2238,7 +2238,7 @@ static int inv_mpu_runtime_resume(struct device *dev)
 }
 #endif
 
-#ifdef CONFIG_PM
+#ifdef CCONFIG_PM
 static int inv_mpu_resume(struct device *dev)
 {
 	struct inv_mpu_iio_s *st =
