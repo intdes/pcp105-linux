@@ -346,3 +346,38 @@ config PSB6970_PHY
 	tristate "Lantiq XWAY Tantos (PSB6970) Ethernet switch"
 	select SWCONFIG
 	select ETHERNET_PACKET_MANGLE
+
+config MICREL_KSZ8873PHY
+    tristate "Driver for Micrel KSZ8873 Switch PHYs"
+    ---help---
+    Supports the KSZ8873, KSZ8863 Switch PHYs.
+    If say Y, select one and only one MIIM bus interface from
+    KSPHY_BUS_MDIO or KSPHY_BUS_SPI or KSPHY_BUS_I2C.
+
+config KSPHY_MULTI_ETH
+    bool "Micrel KSZ8873 is configured for multiple logical Network interface"
+    depends on MICREL_KSZ8873PHY
+    ---help---
+    Each Switch port is configured for a delegated Network Interface,
+    For examplem "eth0" is communicating with Switch Port 1 and
+    "eth1" is communicating with Switch Port 2.
+
+config KSPHY_BUS_MDIO
+    bool "MDIO bus driver for Micrel KSZ8873 Switch PHYs"
+    depends on MICREL_KSZ8873PHY
+    default y
+        ---help---
+        Access Micrel KSZ8873 Switch PHY device through MDC/MDIO bus.
+
+config KSPHY_BUS_SPI
+         bool "SPI bus driver for Micrel KSZ8873 Switch PHYs"
+         depends on MICREL_KSZ8873PHY && KSPHY_BUS_MDIO = n
+     ---help---
+     Access Micrel KSZ8873 Switch PHY device through SPI bus.
+
+ config KSPHY_BUS_I2C
+    bool "I2C bus driver for Micrel KSZ8873 Switch PHYs"
+    depends on MICREL_KSZ8873PHY && KSPHY_BUS_MDIO = n
+    ---help---
+    Access Micrel KSZ8873 Switch PHY device through I2C bus.
+

@@ -63,7 +63,7 @@ static int stmmac_mdio_busy_wait(void __iomem *ioaddr, unsigned int mii_addr)
  * accessing the PHY registers.
  * Fortunately, it seems this has no drawback for the 7109 MAC.
  */
-static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
 {
 	struct net_device *ndev = bus->priv;
 	struct stmmac_priv *priv = netdev_priv(ndev);
@@ -97,7 +97,7 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
  * @phydata: phy data
  * Description: it writes the data into the MII register from within the device.
  */
-static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
 			     u16 phydata)
 {
 	struct net_device *ndev = bus->priv;
@@ -187,6 +187,8 @@ int stmmac_mdio_reset(struct mii_bus *bus)
 	return 0;
 }
 
+int ksz8873_mii_init(void *priv, struct net_device *dev, struct mii_bus **mii_bus);
+
 /**
  * stmmac_mdio_register
  * @ndev: net device structure
@@ -204,6 +206,7 @@ int stmmac_mdio_register(struct net_device *ndev)
 	if (!mdio_bus_data)
 		return 0;
 
+#ifndef CONFIG_KSPHY_BUS_MDIO
 	new_bus = mdiobus_alloc();
 	if (new_bus == NULL)
 		return -ENOMEM;
@@ -236,6 +239,10 @@ int stmmac_mdio_register(struct net_device *ndev)
 		pr_err("%s: Cannot register as MDIO bus\n", new_bus->name);
 		goto bus_register_fail;
 	}
+#else
+	ksz8873_mii_init( ndev, ndev, &new_bus);
+	new_bus->reset = &stmmac_mdio_reset;
+#endif
 
 	found = 0;
 	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {

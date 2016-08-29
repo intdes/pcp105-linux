@@ -687,7 +687,7 @@ static void stmmac_release_ptp(struct stmmac_priv *priv)
  * It also invoke the eee initialization because it could happen when switch
  * on different networks (that are eee capable).
  */
-static void stmmac_adjust_link(struct net_device *dev)
+void stmmac_adjust_link(struct net_device *dev)
 {
 	struct stmmac_priv *priv = netdev_priv(dev);
 	struct phy_device *phydev = priv->phydev;
@@ -799,6 +799,8 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
 	}
 }
 
+struct phy_device *ksz8873_mii_connect(struct net_device *dev, u8 phy_addr, phy_interface_t phy_mode );
+
 /**
  * stmmac_init_phy - PHY initialization
  * @dev: net device structure
@@ -819,6 +821,7 @@ static int stmmac_init_phy(struct net_device *dev)
 	priv->speed = 0;
 	priv->oldduplex = -1;
 
+#ifndef CONFIG_KSPHY_BUS_MDIO
 	if (priv->plat->phy_node) {
 		phydev = of_phy_connect(dev, priv->plat->phy_node,
 					&stmmac_adjust_link, 0, interface);
@@ -838,7 +841,10 @@ static int stmmac_init_phy(struct net_device *dev)
 		phydev = phy_connect(dev, phy_id_fmt, &stmmac_adjust_link,
 				     interface);
 	}
-
+#else
+    phydev = ksz8873_mii_connect(dev, 0x1, PHY_INTERFACE_MODE_RMII );
+    phydev->irq = PHY_POLL;
+#endif
 	if (IS_ERR_OR_NULL(phydev)) {
 		pr_err("%s: Could not attach to PHY\n", dev->name);
 		if (!phydev)
