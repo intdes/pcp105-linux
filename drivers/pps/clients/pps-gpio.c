@@ -35,6 +35,7 @@
 #include <linux/list.h>
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
+#include <linux/leds.h>
 
 /* Info for each registered platform device */
 struct pps_gpio_device_data {
@@ -70,6 +71,7 @@ static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 			 (!rising_edge && !info->assert_falling_edge)))
 		pps_event(info->pps, &ts, PPS_CAPTURECLEAR, NULL);
 
+	ledtrig_pps_activity();
 	return IRQ_HANDLED;
 }
 

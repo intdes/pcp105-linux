@@ -126,4 +126,12 @@ config LEDS_TRIGGER_USBDEV
 	  This allows LEDs to be controlled by the presence/activity of
 	  an USB device. If unsure, say N.
 
+config LEDS_TRIGGER_PPS
+	bool "LED PPS Trigger"
+	depends on LEDS_TRIGGERS
+	help
+	  This allows LEDs to be controlled by GPS PPS activity.
+	  If unsure, say N.
+
+
 endif # LEDS_TRIGGERS

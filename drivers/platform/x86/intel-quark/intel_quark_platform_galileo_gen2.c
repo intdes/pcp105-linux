@@ -34,6 +34,9 @@
 #include <linux/iio_mpu.h>
 #include <linux/platform_data/at24.h>
 
+#include <linux/leds.h>
+#include <linux/gpio.h>
+
 /******************************************************************************
  *                        Intel Galileo Gen2
  ******************************************************************************/
@@ -72,6 +75,30 @@ static struct platform_device pps_gpio_device = {
     .dev = {
         .platform_data = &pps_gpio_info
     },
+};
+
+static struct gpio_led pcp105_leds[] = {
+        {
+                .name = "gps_led",
+                .gpio = 1,
+                .default_trigger = "pps",
+                .active_low = 0,
+        },
+};
+
+static struct gpio_led_platform_data pcp105_leds_data = {
+        .num_leds = 1,
+        .leds = pcp105_leds,
+};
+
+static struct platform_device pcp105_leds_dev = {
+        .name = "leds-gpio",
+        .id = -1,
+        .dev.platform_data = &pcp105_leds_data,
+};
+
+static struct platform_device *pcp105_devs[] __initdata = {
+        &pcp105_leds_dev,
 };
 
 const unsigned int iAT24Config = AT24_DEVICE_MAGIC(2048 / 8, 0);
@@ -121,6 +148,7 @@ static struct i2c_board_info i2c0_board_info[] __initdata = {
 
 };
 
+//This didn't work here, so I've moved it to an external module pcp_i2c_init
 static int __init pcp_i2c_init(void)
 {
     at24_data.byte_len = BIT(iAT24Config & AT24_BITMASK(AT24_SIZE_BYTELEN));
@@ -147,6 +175,8 @@ static int intel_quark_platform_galileo_gen2_probe(struct platform_device *pdev)
     } else {
         pr_info("%s: PPS_GPIO device registered OK\n",__func__);
     }
+
+	platform_add_devices(pcp105_devs, 1 );
 
 	return 0;
 }
