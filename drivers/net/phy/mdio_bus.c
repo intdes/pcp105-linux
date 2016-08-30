@@ -510,7 +510,6 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
 	const int num_ids = ARRAY_SIZE(phydev->c45_ids.device_ids);
 	int i;
 
-	printk( "%s\n", __FUNCTION__ );	//WTO
 	if (of_driver_match_device(dev, drv))
 		return 1;
 
@@ -529,9 +528,6 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
 		}
 		return 0;
 	} else {
-		printk( "%X==%X\n",
-				(phydrv->phy_id & phydrv->phy_id_mask),
-				(phydev->phy_id & phydrv->phy_id_mask) );	//WTO
 		return (phydrv->phy_id & phydrv->phy_id_mask) ==
 			(phydev->phy_id & phydrv->phy_id_mask);
 	}
