@@ -53,6 +53,9 @@
 #define AT24_SIZE_BYTELEN       5
 #define AT24_SIZE_FLAGS         8
 
+#define HWREV_P1				0x91
+#define HWREV_P2				0x92
+
 #define AT24_BITMASK(x) (BIT(x) - 1)
 
 /* create non-zero magic value for given eeprom parameters */
@@ -102,6 +105,7 @@ static struct platform_device *pcp105_devs[] __initdata = {
 };
 
 const unsigned int iAT24Config = AT24_DEVICE_MAGIC(2048 / 8, 0);
+static int iHwRev = 0;
 
 struct mpu_platform_data mpu_data =
 {
@@ -175,8 +179,7 @@ static int intel_quark_platform_galileo_gen2_probe(struct platform_device *pdev)
     } else {
         pr_info("%s: PPS_GPIO device registered OK\n",__func__);
     }
-
-	platform_add_devices(pcp105_devs, 1 );
+	//platform_add_devices(pcp105_devs, 1 );
 
 	return 0;
 }
@@ -185,6 +188,26 @@ static int intel_quark_platform_galileo_gen2_remove(struct platform_device *pdev
 {
 	return 0;
 }
+
+int GetHwRev( void )
+{
+	return ( iHwRev );
+}
+
+EXPORT_SYMBOL_GPL(GetHwRev);
+
+/*
+ *  Parse hardware revision from the kernel command line.
+ */
+static int __init hwrev_setup(char *line)
+{
+	sscanf( line, "%02X", &iHwRev );
+    return 1;
+}
+
+__setup("hw_rev=", hwrev_setup);
+
+
 
 static struct platform_driver quark_galileo_platform_driver = {
 	.driver		= {
