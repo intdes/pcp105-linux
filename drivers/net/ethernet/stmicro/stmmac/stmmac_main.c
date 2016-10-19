@@ -799,6 +799,18 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
 	}
 }
 
+int bKsPhy = 0;
+
+static int __init ksphy_setup(char *line)
+{
+    sscanf( line, "%02X", &bKsPhy );
+
+	bKsPhy = (bKsPhy==1)?1:0;
+    return 1;
+}
+
+__setup("ksphy=", ksphy_setup);
+
 struct phy_device *ksz8873_mii_connect(struct net_device *dev, u8 phy_addr, phy_interface_t phy_mode );
 
 /**
@@ -821,30 +833,33 @@ static int stmmac_init_phy(struct net_device *dev)
 	priv->speed = 0;
 	priv->oldduplex = -1;
 
-#ifndef CONFIG_KSPHY_BUS_MDIO
-	if (priv->plat->phy_node) {
-		phydev = of_phy_connect(dev, priv->plat->phy_node,
-					&stmmac_adjust_link, 0, interface);
-	} else {
-		if (priv->plat->phy_bus_name)
-			snprintf(bus_id, MII_BUS_ID_SIZE, "%s-%x",
-				 priv->plat->phy_bus_name, priv->plat->bus_id);
-		else
-			snprintf(bus_id, MII_BUS_ID_SIZE, "stmmac-%x",
-				 priv->plat->bus_id);
+	if ( bKsPhy == 0 )
+	{
+		if (priv->plat->phy_node) {
+			phydev = of_phy_connect(dev, priv->plat->phy_node,
+						&stmmac_adjust_link, 0, interface);
+		} else {
+			if (priv->plat->phy_bus_name)
+				snprintf(bus_id, MII_BUS_ID_SIZE, "%s-%x",
+					 priv->plat->phy_bus_name, priv->plat->bus_id);
+			else
+				snprintf(bus_id, MII_BUS_ID_SIZE, "stmmac-%x",
+					 priv->plat->bus_id);
 
-		snprintf(phy_id_fmt, MII_BUS_ID_SIZE + 3, PHY_ID_FMT, bus_id,
-			 priv->plat->phy_addr);
-		pr_debug("stmmac_init_phy:  trying to attach to %s\n",
-			 phy_id_fmt);
+			snprintf(phy_id_fmt, MII_BUS_ID_SIZE + 3, PHY_ID_FMT, bus_id,
+				 priv->plat->phy_addr);
+			pr_debug("stmmac_init_phy:  trying to attach to %s\n",
+				 phy_id_fmt);
 
-		phydev = phy_connect(dev, phy_id_fmt, &stmmac_adjust_link,
-				     interface);
+			phydev = phy_connect(dev, phy_id_fmt, &stmmac_adjust_link,
+						 interface);
+		}
 	}
-#else
-    phydev = ksz8873_mii_connect(dev, 0x1, PHY_INTERFACE_MODE_RMII );
-    phydev->irq = PHY_POLL;
-#endif
+	else
+	{
+    	phydev = ksz8873_mii_connect(dev, 0x1, PHY_INTERFACE_MODE_RMII );
+	    phydev->irq = PHY_POLL;
+	}
 	if (IS_ERR_OR_NULL(phydev)) {
 		pr_err("%s: Could not attach to PHY\n", dev->name);
 		if (!phydev)
@@ -2846,6 +2861,7 @@ int stmmac_dvr_probe(struct device *device,
 	priv = netdev_priv(ndev);
 	priv->device = device;
 	priv->dev = ndev;
+	priv->id = plat_dat->mdio_bus_data->id;
 
 	stmmac_set_ethtool_ops(ndev);
 	priv->pause = pause;

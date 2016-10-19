@@ -35,6 +35,7 @@
 #include <net/tcp.h>
 #include "ksz8873phy.h"
 
+#include "../../../drivers/net/ethernet/stmicro/stmmac/stmmac.h"
 
 #define DRV_MDIONAME		"KSZ8873 MII bus"
 
@@ -305,13 +306,13 @@ void platform_mac_adjust_link(struct net_device *dev)
 #endif
 }
 
-struct phy_device * ksz8873_mii_connect(struct net_device *dev, u8 phy_addr, phy_interface_t phy_mode ) {
+struct phy_device * ksz8873_mii_connect(struct net_device *dev, u8 phy_addr, phy_interface_t phy_mode ) 
+{
     struct phy_device *phydev = NULL;
     char phy_id[MII_BUS_ID_SIZE];
+	struct stmmac_priv *stmpriv = netdev_priv(dev);
 
-
-
-    snprintf(phy_id, MII_BUS_ID_SIZE, PHY_ID_FMT, "mdio", phy_addr);
+    snprintf(phy_id, MII_BUS_ID_SIZE, "%s%d:%02x", "mdio", stmpriv->id, phy_addr);
 
     phydev = phy_connect(dev, phy_id,
                          platform_mac_adjust_link, phy_mode);
@@ -345,6 +346,7 @@ struct phy_device * ksz8873_mii_connect(struct net_device *dev, u8 phy_addr, phy
 
 static int ksz8873_mii_probe(void *priv, struct net_device *dev, struct mii_bus **pmii_bus)
 {
+	struct stmmac_priv *stmpriv = netdev_priv(dev);
     struct mii_bus *mii_bus;
     int *irqlist;
     int err = -ENXIO, i;
@@ -393,7 +395,7 @@ static int ksz8873_mii_probe(void *priv, struct net_device *dev, struct mii_bus 
 #endif
 
     mii_bus->name = DRV_MDIONAME;
-    snprintf(mii_bus->id, MII_BUS_ID_SIZE, "mdio");
+    snprintf(mii_bus->id, MII_BUS_ID_SIZE, "mdio%d", stmpriv->id);
     mii_bus->parent  = &(dev->dev);
     mii_bus->read = ksz8873_fns->read;
     mii_bus->write = ksz8873_fns->write;

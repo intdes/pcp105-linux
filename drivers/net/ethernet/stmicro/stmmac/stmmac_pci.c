@@ -128,17 +128,67 @@ static int quark_default_data(struct plat_stmmacenet_data *plat,
 }
 
 static struct stmmac_pci_dmi_data quark_pci_dmi_data[] = {
-	{
-		.name = "Galileo",
-		.func = 6,
-		.phy_addr = 1,
-	},
-	{
-		.name = "GalileoGen2",
-		.func = 6,
-		.phy_addr = 1,
-	},
-	{}
+    {
+        .name = "Galileo",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "GalileoGen2",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "ClantonHill",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "ClantonHill",
+        .func = 7,
+        .phy_addr = 0,
+    },
+    {
+        .name = "ClantonPeakSVP",
+        .func = 6,
+        .phy_addr = 3,
+    },
+    {
+        .name = "ClantonPeakSVP",
+        .func = 7,
+        .phy_addr = 0,
+    },
+    {
+        .name = "CrossHill",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "CrossHill",
+        .func = 7,
+        .phy_addr = 0,
+    },
+    {
+        .name = "RelianceCreek",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "RelianceCreek",
+        .func = 7,
+        .phy_addr = 0,
+    },
+    {
+        .name = "RelianceCreekSPU",
+        .func = 6,
+        .phy_addr = 0,
+    },
+    {
+        .name = "RelianceCreekSPU",
+        .func = 7,
+        .phy_addr = 0,
+    },
+    {}
 };
 
 static struct stmmac_pci_info quark_pci_info = {
@@ -176,6 +226,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
 					   GFP_KERNEL);
 	if (!plat->mdio_bus_data)
 		return -ENOMEM;
+	plat->mdio_bus_data->id = pdev->devfn;
 
 	plat->dma_cfg = devm_kzalloc(&pdev->dev, sizeof(*plat->dma_cfg),
 				     GFP_KERNEL);

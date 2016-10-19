@@ -125,6 +125,7 @@ struct stmmac_priv {
 	int use_riwt;
 	int irq_wake;
 	spinlock_t ptp_lock;
+	int id;
 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dbgfs_dir;

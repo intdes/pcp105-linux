@@ -84,6 +84,7 @@ struct stmmac_mdio_bus_data {
 	int reset_gpio, active_low;
 	u32 delays[3];
 #endif
+	int id;
 };
 
 struct stmmac_dma_cfg {

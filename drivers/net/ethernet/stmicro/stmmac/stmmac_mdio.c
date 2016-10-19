@@ -189,6 +189,8 @@ int stmmac_mdio_reset(struct mii_bus *bus)
 
 int ksz8873_mii_init(void *priv, struct net_device *dev, struct mii_bus **mii_bus);
 
+extern int bKsPhy;
+
 /**
  * stmmac_mdio_register
  * @ndev: net device structure
@@ -206,43 +208,46 @@ int stmmac_mdio_register(struct net_device *ndev)
 	if (!mdio_bus_data)
 		return 0;
 
-#ifndef CONFIG_KSPHY_BUS_MDIO
-	new_bus = mdiobus_alloc();
-	if (new_bus == NULL)
-		return -ENOMEM;
+	if ( bKsPhy == 0 )
+	{
+		new_bus = mdiobus_alloc();
+		if (new_bus == NULL)
+			return -ENOMEM;
 
-	if (mdio_bus_data->irqs) {
-		irqlist = mdio_bus_data->irqs;
-	} else {
-		for (addr = 0; addr < PHY_MAX_ADDR; addr++)
-			priv->mii_irq[addr] = PHY_POLL;
-		irqlist = priv->mii_irq;
-	}
+		if (mdio_bus_data->irqs) {
+			irqlist = mdio_bus_data->irqs;
+		} else {
+			for (addr = 0; addr < PHY_MAX_ADDR; addr++)
+				priv->mii_irq[addr] = PHY_POLL;
+			irqlist = priv->mii_irq;
+		}
 
 #ifdef CONFIG_OF
-	if (priv->device->of_node)
-		mdio_bus_data->reset_gpio = -1;
+		if (priv->device->of_node)
+			mdio_bus_data->reset_gpio = -1;
 #endif
 
-	new_bus->name = "stmmac";
-	new_bus->read = &stmmac_mdio_read;
-	new_bus->write = &stmmac_mdio_write;
-	new_bus->reset = &stmmac_mdio_reset;
-	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%s-%x",
-		 new_bus->name, priv->plat->bus_id);
-	new_bus->priv = ndev;
-	new_bus->irq = irqlist;
-	new_bus->phy_mask = mdio_bus_data->phy_mask;
-	new_bus->parent = priv->device;
-	err = mdiobus_register(new_bus);
-	if (err != 0) {
-		pr_err("%s: Cannot register as MDIO bus\n", new_bus->name);
-		goto bus_register_fail;
+		new_bus->name = "stmmac";
+		new_bus->read = &stmmac_mdio_read;
+		new_bus->write = &stmmac_mdio_write;
+		new_bus->reset = &stmmac_mdio_reset;
+		snprintf(new_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+			 new_bus->name, priv->plat->bus_id);
+		new_bus->priv = ndev;
+		new_bus->irq = irqlist;
+		new_bus->phy_mask = mdio_bus_data->phy_mask;
+		new_bus->parent = priv->device;
+		err = mdiobus_register(new_bus);
+		if (err != 0) {
+			pr_err("%s: Cannot register as MDIO bus\n", new_bus->name);
+			goto bus_register_fail;
+		}
 	}
-#else
-	ksz8873_mii_init( ndev, ndev, &new_bus);
-	new_bus->reset = &stmmac_mdio_reset;
-#endif
+	else
+	{
+		ksz8873_mii_init( ndev, ndev, &new_bus);
+		new_bus->reset = &stmmac_mdio_reset;
+	}
 
 	found = 0;
 	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {

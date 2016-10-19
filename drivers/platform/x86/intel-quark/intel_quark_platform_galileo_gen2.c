@@ -33,6 +33,7 @@
 #include <linux/pps-gpio.h> 
 #include <linux/iio_mpu.h>
 #include <linux/platform_data/at24.h>
+#include <linux/spi/mcp23s08.h>
 
 #include <linux/leds.h>
 #include <linux/gpio.h>
@@ -125,6 +126,20 @@ struct at24_platform_data at24_data = {
     .page_size = 8,
 };
 
+struct mcp23s08_platform_data mpc23s08_data = {
+    { { 1, 0 },     // chip[8]  { is_present, pullups }
+      { 1, 0 },
+      { 1, 0 },
+      { 1, 0 },
+      { 1, 0 },
+      { 1, 0 },
+      { 1, 0 },
+      { 1, 0 } },
+    -1,             // base
+    false,          // irq_controller
+    false,          // mirror
+};
+
 static struct i2c_board_info i2c0_board_info[] __initdata = {
 {
         .type = "mpu9250",
@@ -136,6 +151,15 @@ static struct i2c_board_info i2c0_board_info[] __initdata = {
         .addr = 0x20,
 },
 {
+        .type = "mcp23008",
+        .addr = 0x21,
+        .platform_data = &mpc23s08_data,
+},
+{
+        .type = "bno055",
+        .addr = 0x28,
+},
+{
         .type = "lm73",
         .addr = 0x48,
 },
@@ -143,11 +167,14 @@ static struct i2c_board_info i2c0_board_info[] __initdata = {
         .type = "ads1015",
         .addr = 0x4b,
 },
-
 {
         .type = "24c02",
         .addr = 0x50,
         .platform_data = &at24_data,
+},
+{
+        .type = "pcp105mcu",
+        .addr = 0x66,
 },
 
 };
@@ -179,6 +206,7 @@ static int intel_quark_platform_galileo_gen2_probe(struct platform_device *pdev)
     } else {
         pr_info("%s: PPS_GPIO device registered OK\n",__func__);
     }
+//	pcp_i2c_init();
 	//platform_add_devices(pcp105_devs, 1 );
 
 	return 0;
