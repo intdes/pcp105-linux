@@ -479,6 +479,7 @@ static int acpi_suspend_begin(suspend_state_t pm_state)
 	u32 acpi_state = acpi_suspend_states[pm_state];
 	int error;
 
+	printk( "+%s\n", __FUNCTION__ );	//WTO
 	error = (nvs_nosave || nvs_nosave_s3) ? 0 : suspend_nvs_alloc();
 	if (error)
 		return error;
@@ -491,6 +492,7 @@ static int acpi_suspend_begin(suspend_state_t pm_state)
 		pm_set_suspend_via_firmware();
 
 	acpi_pm_start(acpi_state);
+	printk( "+%s 1\n", __FUNCTION__ );	//WTO
 	return 0;
 }
 
@@ -508,7 +510,9 @@ static int acpi_suspend_enter(suspend_state_t pm_state)
 	u32 acpi_state = acpi_target_sleep_state;
 	int error;
 
+	printk( "+%s\n", __FUNCTION__ );	//WTO
 	ACPI_FLUSH_CPU_CACHE();
+	printk( "+%s 1\n", __FUNCTION__ );	//WTO
 
 	trace_suspend_resume(TPS("acpi_suspend"), acpi_state, true);
 	switch (acpi_state) {
@@ -527,6 +531,7 @@ static int acpi_suspend_enter(suspend_state_t pm_state)
 		pm_set_resume_via_firmware();
 		break;
 	}
+	printk( "+%s 2\n", __FUNCTION__ );	//WTO
 	trace_suspend_resume(TPS("acpi_suspend"), acpi_state, false);
 
 	/* This violates the spec but is required for bug compatibility. */
