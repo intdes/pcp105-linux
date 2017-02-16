@@ -1177,6 +1177,7 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_7253),
 	  .driver_info = (kernel_ulong_t)&net_intf1_blacklist },
 	{ USB_DEVICE(0x2c7c, 0x0125) }, /* Quectel EC20 */
+	{ USB_DEVICE(0x2c7c, 0x0121) }, /* Quectel EC21 */
 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_UC864E) },
 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_UC864G) },
 	{ USB_DEVICE(TELIT_VENDOR_ID, TELIT_PRODUCT_CC864_DUAL) },
