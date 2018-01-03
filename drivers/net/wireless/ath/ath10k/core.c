@@ -339,6 +339,7 @@ static const struct firmware *ath10k_fetch_fw_file(struct ath10k *ar,
 
 //	snprintf(filename, sizeof(filename), "%s/%s", dir, file);
 	snprintf(filename, sizeof(filename), "%s", file);
+	printk( "%s : requesting %s\n", __func__, filename );	//WTO
 	ret = request_firmware(&fw, filename, ar->dev);
 	if (ret)
 		return ERR_PTR(ret);
@@ -1181,17 +1182,16 @@ static int ath10k_core_fetch_firmware_files(struct ath10k *ar)
 	/* calibration file is optional, don't check for any errors */
 #ifdef DONT_SKIP_MISSING_FILES	
 	ath10k_fetch_cal_file(ar);
-
+#endif
 	ar->fw_api = 5;
 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "trying fw api %d\n", ar->fw_api);
 
 	ret = ath10k_core_fetch_firmware_api_n(ar, ATH10K_FW_API5_FILE);
 	if (ret == 0)
 		goto success;
-#endif
+		
 	ar->fw_api = 4;
 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "trying fw api %d\n", ar->fw_api);
-	printk("trying fw api %d\n", ar->fw_api);	//WTO
 
 	ret = ath10k_core_fetch_firmware_api_n(ar, ATH10K_FW_API4_FILE);
 	if (ret == 0)
