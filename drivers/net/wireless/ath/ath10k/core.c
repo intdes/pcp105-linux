@@ -935,13 +935,13 @@ static int ath10k_core_fetch_board_file(struct ath10k *ar)
 		ath10k_err(ar, "failed to create board name: %d", ret);
 		return ret;
 	}
-#ifdef DONT_SKIP_MISSING_FILES	
+//#ifdef DONT_SKIP_MISSING_FILES	
 	ar->bd_api = 2;
 	ret = ath10k_core_fetch_board_data_api_n(ar, boardname,
 						 ATH10K_BOARD_API2_FILE);
 	if (!ret)
 		goto success;
-#endif
+//#endif
 	ar->bd_api = 1;
 	ret = ath10k_core_fetch_board_data_api_1(ar);
 	if (ret) {
@@ -1182,13 +1182,14 @@ static int ath10k_core_fetch_firmware_files(struct ath10k *ar)
 	/* calibration file is optional, don't check for any errors */
 #ifdef DONT_SKIP_MISSING_FILES	
 	ath10k_fetch_cal_file(ar);
-#endif
 	ar->fw_api = 5;
+
 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "trying fw api %d\n", ar->fw_api);
 
 	ret = ath10k_core_fetch_firmware_api_n(ar, ATH10K_FW_API5_FILE);
 	if (ret == 0)
 		goto success;
+#endif
 		
 	ar->fw_api = 4;
 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "trying fw api %d\n", ar->fw_api);
