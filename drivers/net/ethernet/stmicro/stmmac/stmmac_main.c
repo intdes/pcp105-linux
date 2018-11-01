@@ -694,6 +694,7 @@ void stmmac_adjust_link(struct net_device *dev)
 	unsigned long flags;
 	int new_state = 0;
 	unsigned int fc = priv->flow_ctrl, pause_time = priv->pause;
+	int iSpeed;
 
 	if (phydev == NULL)
 		return;
@@ -720,7 +721,9 @@ void stmmac_adjust_link(struct net_device *dev)
 
 		if (phydev->speed != priv->speed) {
 			new_state = 1;
-			switch (phydev->speed) {
+			//iSpeed = phydev->speed;
+			iSpeed = 100;	//force connection to 100Mbps
+			switch (iSpeed) {
 			case 1000:
 				if (likely(priv->plat->has_gmac))
 					ctrl &= ~priv->hw->link.port;
@@ -730,7 +733,7 @@ void stmmac_adjust_link(struct net_device *dev)
 			case 10:
 				if (priv->plat->has_gmac) {
 					ctrl |= priv->hw->link.port;
-					if (phydev->speed == SPEED_100) {
+					if (iSpeed == SPEED_100) {
 						ctrl |= priv->hw->link.speed;
 					} else {
 						ctrl &= ~(priv->hw->link.speed);

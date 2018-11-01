@@ -967,4 +967,10 @@ config SURFACE_PRO3_BUTTON
 	depends on ACPI && INPUT
 	---help---
 	  This driver handles the power/home/volume buttons on the Microsoft Surface Pro 3 tablet.
+
+config HYRAX
+	tristate "Hyrax"
+	help
+	  This is a driver for the Hyrax
+
 endif # X86_PLATFORM_DEVICES
