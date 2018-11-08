@@ -29,7 +29,6 @@
 #include <linux/irq.h>
 #include <linux/platform_data/at24.h>
 #include <linux/spi/mcp23s08.h>
-#include <linux/can/platform/mcp251x.h>
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/spi/spi.h>
@@ -179,8 +178,6 @@ int fita_init(void)
 /*----- Register I2C devices -----------------------------------------*/	
 	at24_data.byte_len = BIT(iAT24Config & AT24_BITMASK(AT24_SIZE_BYTELEN));
 	at24_data.flags =  iAT24Config & AT24_BITMASK(AT24_SIZE_FLAGS);
-
-	i2c0_board_info[0].irq = gpio_to_irq(MPU_9250_IRQ);
 
     if ( i2c_register_board_info(0, i2c0_board_info, ARRAY_SIZE(i2c0_board_info) ) != 0 )
 	{

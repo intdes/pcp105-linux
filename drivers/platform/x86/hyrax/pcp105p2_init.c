@@ -62,6 +62,7 @@
 #define P2_CAN_GPIO				9
 
 #define I2C_ALERT				28
+#define CAN_IRQ					25
 
 #define FAILSAFE_GPIO			503
 
@@ -169,7 +170,7 @@ static struct spi_board_info spi1_board_info[] = {
     [0] = {
         .modalias   = "mcp2515",
         .platform_data  = &hyrax_mcp2515_pdata,
-        .irq        = -1,
+        .irq        = CAN_IRQ,
         .max_speed_hz   = 1*1000*1000,
         .bus_num    = 169,
         .mode       = SPI_MODE_0,
@@ -245,7 +246,6 @@ int pcp105p2_init(void)
 	platform_add_devices(pcp105_devs, 1 );
 
 /*----- Register SPI devices -----------------------------------------*/	
-	spi1_board_info[0].irq = gpio_to_irq(P2_CAN_GPIO);
     spi_register_board_info(spi1_board_info, ARRAY_SIZE(spi1_board_info));
 
 /*----- Register failsafe gpio ---------------------------------------*/	

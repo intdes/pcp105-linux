@@ -59,6 +59,9 @@
 
 #define P1_CAN_GPIO				9
 
+#define CAN_IRQ					25
+#define I2C_ALERT				28
+
 /*----- variables ----------------------------------------------------*/
 
 static const unsigned int iAT24Config = AT24_DEVICE_MAGIC(2048 / 8, 0);
@@ -103,6 +106,7 @@ static struct i2c_board_info i2c0_board_info[] __initdata = {
 		.type = "mpu9250",
 		.addr = 0xD0 >> 1,
         .platform_data = &mpu_data,
+		.irq = I2C_ALERT,
 },
 {
 		.type = "slb9645tt",
@@ -123,7 +127,7 @@ static struct spi_board_info spi1_board_info[] = {
     [0] = {
         .modalias   = "mcp2515",
         .platform_data  = &hyrax_mcp2515_pdata,
-        .irq        = -1,
+        .irq        = CAN_IRQ,
         .max_speed_hz   = 1*1000*1000,
         .bus_num    = 169,
         .mode       = SPI_MODE_0,
@@ -162,8 +166,6 @@ int pcp105p1_init(void)
 	at24_data.byte_len = BIT(iAT24Config & AT24_BITMASK(AT24_SIZE_BYTELEN));
 	at24_data.flags =  iAT24Config & AT24_BITMASK(AT24_SIZE_FLAGS);
 
-	i2c0_board_info[0].irq = gpio_to_irq(MPU_9250_IRQ);
-
     if ( i2c_register_board_info(0, i2c0_board_info, ARRAY_SIZE(i2c0_board_info) ) != 0 )
 	{
 		printk( "Error registering board info\n" );
@@ -173,7 +175,6 @@ int pcp105p1_init(void)
 	platform_add_devices(pcp105_devs, 1 );
 
 /*----- Register SPI devices -----------------------------------------*/	
-	spi1_board_info[0].irq = gpio_to_irq(P1_CAN_GPIO);
     spi_register_board_info(spi1_board_info, ARRAY_SIZE(spi1_board_info));
 
 	return 0;

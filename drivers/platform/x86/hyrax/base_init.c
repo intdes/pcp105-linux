@@ -212,7 +212,6 @@ static void __exit hyrax_exit(void)
 {
 }
 
-//module_init(hyrax_init);
 arch_initcall(hyrax_init);
 module_exit(hyrax_exit);
 

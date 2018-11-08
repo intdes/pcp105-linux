@@ -57,23 +57,11 @@
 #define ARRAY_SIZE(x)			(sizeof(x)/sizeof(x[0]))
 #endif
 
+#define I2C_ALERT				28
+
 /*----- variables ----------------------------------------------------*/
 
 static const unsigned int iAT24Config = AT24_DEVICE_MAGIC(2048 / 8, 0);
-
-static struct mpu_platform_data mpu_data = 
-{
-	.int_config  = 0x10,
-    .level_shifter = 0,
-    .orientation = ACCEL_ORIENTATION,
-    .sec_slave_type = SECONDARY_SLAVE_TYPE_COMPASS,
-    .sec_slave_id   = COMPASS_ID_AK8963,
-    .secondary_i2c_addr = 0x18 >> 1,
-    .secondary_orientation = COMPASS_ORIENTATION,
-    .power_supply = NULL,
-    .secondary_power_supply = NULL,
-    .gpio = MPU_9250_IRQ,
-};
 
 static struct at24_platform_data at24_data = {
 	.page_size = 8,
@@ -122,6 +110,7 @@ static struct i2c_board_info i2c0_board_info[] __initdata = {
 {
 		.type = "pcp105mcu",
 		.addr = 0x66,
+		.irq = I2C_ALERT,
 },
 
 };
@@ -175,8 +164,6 @@ int necp1_init(void)
 /*----- Register I2C devices -----------------------------------------*/	
 	at24_data.byte_len = BIT(iAT24Config & AT24_BITMASK(AT24_SIZE_BYTELEN));
 	at24_data.flags =  iAT24Config & AT24_BITMASK(AT24_SIZE_FLAGS);
-
-	i2c0_board_info[0].irq = gpio_to_irq(MPU_9250_IRQ);
 
     if ( i2c_register_board_info(0, i2c0_board_info, ARRAY_SIZE(i2c0_board_info) ) != 0 )
 	{
