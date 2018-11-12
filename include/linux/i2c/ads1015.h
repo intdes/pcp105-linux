@@ -27,6 +27,8 @@ struct ads1015_channel_data {
 	bool enabled;
 	unsigned int pga;
 	unsigned int data_rate;
+	unsigned long iMultiplier;
+	unsigned long iDivider;
 };
 
 struct ads1015_platform_data {

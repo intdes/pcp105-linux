@@ -147,6 +147,27 @@ static ssize_t show_in(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", ads1015_reg_to_mv(client, index, res));
 }
 
+/* sysfs callback function */
+static ssize_t show_actual(struct device *dev, struct device_attribute *da,
+	char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+	struct i2c_client *client = to_i2c_client(dev);
+	int res;
+	int index = attr->index;
+	long iADCVoltage;
+	struct ads1015_data *data = i2c_get_clientdata(client);
+
+	res = ads1015_read_adc(client, index);
+	if (res < 0)
+		return res;
+
+	iADCVoltage = ads1015_reg_to_mv(client, index, res);
+	iADCVoltage *= data->channel_data[index].iMultiplier;
+	iADCVoltage /= data->channel_data[index].iDivider;
+	return sprintf(buf, "%d\n", iADCVoltage );
+}
+
 static const struct sensor_device_attribute ads1015_in[] = {
 	SENSOR_ATTR(in0_input, S_IRUGO, show_in, NULL, 0),
 	SENSOR_ATTR(in1_input, S_IRUGO, show_in, NULL, 1),
@@ -157,6 +178,18 @@ static const struct sensor_device_attribute ads1015_in[] = {
 	SENSOR_ATTR(in6_input, S_IRUGO, show_in, NULL, 6),
 	SENSOR_ATTR(in7_input, S_IRUGO, show_in, NULL, 7),
 };
+
+static const struct sensor_device_attribute ads1015_actual[] = {
+	SENSOR_ATTR(in0_actual, S_IRUGO, show_actual, NULL, 0),
+	SENSOR_ATTR(in1_actual, S_IRUGO, show_actual, NULL, 1),
+	SENSOR_ATTR(in2_actual, S_IRUGO, show_actual, NULL, 2),
+	SENSOR_ATTR(in3_actual, S_IRUGO, show_actual, NULL, 3),
+	SENSOR_ATTR(in4_actual, S_IRUGO, show_actual, NULL, 4),
+	SENSOR_ATTR(in5_actual, S_IRUGO, show_actual, NULL, 5),
+	SENSOR_ATTR(in6_actual, S_IRUGO, show_actual, NULL, 6),
+	SENSOR_ATTR(in7_actual, S_IRUGO, show_actual, NULL, 7),
+};
+
 
 /*
  * Driver interface
@@ -169,7 +202,10 @@ static int ads1015_remove(struct i2c_client *client)
 
 	hwmon_device_unregister(data->hwmon_dev);
 	for (k = 0; k < ADS1015_CHANNELS; ++k)
+	{
 		device_remove_file(&client->dev, &ads1015_in[k].dev_attr);
+		device_remove_file(&client->dev, &ads1015_actual[k].dev_attr);
+	}
 	return 0;
 }
 
@@ -236,11 +272,13 @@ static void ads1015_get_channels_config(struct i2c_client *client)
 	unsigned int k;
 	struct ads1015_data *data = i2c_get_clientdata(client);
 	struct ads1015_platform_data *pdata = dev_get_platdata(&client->dev);
+	int i;
 
 	/* prefer platform data */
 	if (pdata) {
 		memcpy(data->channel_data, pdata->channel_data,
 		       sizeof(data->channel_data));
+
 		return;
 	}
 
@@ -280,6 +318,10 @@ static int ads1015_probe(struct i2c_client *client,
 		err = device_create_file(&client->dev, &ads1015_in[k].dev_attr);
 		if (err)
 			goto exit_remove;
+		err = device_create_file(&client->dev, &ads1015_actual[k].dev_attr);
+		if (err)
+			goto exit_remove;
+
 	}
 
 	data->hwmon_dev = hwmon_device_register(&client->dev);
@@ -292,7 +334,10 @@ static int ads1015_probe(struct i2c_client *client,
 
 exit_remove:
 	for (k = 0; k < ADS1015_CHANNELS; ++k)
+	{
 		device_remove_file(&client->dev, &ads1015_in[k].dev_attr);
+		device_remove_file(&client->dev, &ads1015_actual[k].dev_attr);
+	}
 	return err;
 }
 
