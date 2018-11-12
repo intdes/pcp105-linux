@@ -127,7 +127,7 @@ static struct mcp23s08_platform_data mpc23s08_data = {
 #define ADS1015_DEFAULT_PGA 		ADS1015_PGA_FS_2V
 #define ADS1015_DEFAULT_DATA_RATE 	4
 
-struct ads1015_platform_data ads1015_data = {
+static struct ads1015_platform_data ads1015_data = {
 {
 	{ false, ADS1015_DEFAULT_PGA, 		ADS1015_DEFAULT_DATA_RATE, 1, 1 },
 	{ false, ADS1015_DEFAULT_PGA, 		ADS1015_DEFAULT_DATA_RATE, 1, 1 },

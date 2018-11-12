@@ -165,7 +165,7 @@ static ssize_t show_actual(struct device *dev, struct device_attribute *da,
 	iADCVoltage = ads1015_reg_to_mv(client, index, res);
 	iADCVoltage *= data->channel_data[index].iMultiplier;
 	iADCVoltage /= data->channel_data[index].iDivider;
-	return sprintf(buf, "%d\n", iADCVoltage );
+	return sprintf(buf, "%ld\n", iADCVoltage );
 }
 
 static const struct sensor_device_attribute ads1015_in[] = {
@@ -272,7 +272,6 @@ static void ads1015_get_channels_config(struct i2c_client *client)
 	unsigned int k;
 	struct ads1015_data *data = i2c_get_clientdata(client);
 	struct ads1015_platform_data *pdata = dev_get_platdata(&client->dev);
-	int i;
 
 	/* prefer platform data */
 	if (pdata) {
