@@ -759,6 +759,7 @@ struct flash_info {
 #define MFR_SST 0xBF
 #define MFR_WINBOND	0xEF
 #define MFR_AMD 0x01
+#define MFR_ADESTO 0x1f
 
 static const struct flash_info __initdata flash_data[] = {
 	{"SST25WF512",  MFR_SST, 0x01, 0x2501,   64 * 1024, 4 * 1024,
@@ -786,6 +787,8 @@ static const struct flash_info __initdata flash_data[] = {
 	{"W25Q64", 		MFR_WINBOND, 0x16, 0x4017, 8 * 1024 * 1024, 64 * 1024, 
 	 SST25VFXXXB_CMDS},
 	{"S25FL164", 	MFR_AMD, 0x16, 0x4017, 8 * 1024 * 1024, 64 * 1024, 
+	 SST25VFXXXB_CMDS},
+	{"AT25SF641", 	MFR_ADESTO, 0x16, 0x3217, 8 * 1024 * 1024, 64 * 1024, 
 	 SST25VFXXXB_CMDS},
 };
 
